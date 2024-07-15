@@ -9,11 +9,24 @@ public class PlayerMovementComponent : MonoBehaviour
     [SerializeField, Range(0, 100f)]
     private float _maxSpeed = 10.0f;
     [SerializeField, Range(0, 1000f)]
-    private float _maxAcceleration = 100f;
+    private float _maxGroundedAcceleration = 100f;
+    [SerializeField, Range(0, 90f)] 
+    private float _maxGroundedAngle = 70f;
+
+    private float _maxGroundedAngleRads => Mathf.Deg2Rad* _maxGroundedAngle;
 
     [Header("Movement - Jumping")]
     [SerializeField, Range(0, 10f)]
     private float _maxJumpHeight = 5f;
+    [SerializeField, Range(0, 10f)]
+    private float _maxAirAcceleration = 1f;
+
+    [SerializeField] 
+    private int _maxAirJumps = 1;
+
+    int _currentAirJumps = 0;
+
+    private bool desiredJump = false;
 
     [Header("Movement - Grounded")] 
     [SerializeField, Range(0, 2f)]
@@ -28,6 +41,8 @@ public class PlayerMovementComponent : MonoBehaviour
     private Vector3 _desiredVelocity;
 
     private Vector3 _feetOffset = -Vector3.one;
+    private bool _isGrounded;
+
     private Vector3 FeetOffset
     {
         get
@@ -60,7 +75,11 @@ public class PlayerMovementComponent : MonoBehaviour
         RaycastHit hit;
         if (Physics.SphereCast(FeetPosition, _groundedCastRadius, Vector3.down, out hit, _groundedCastMaxDistance))
         {
-            return true;
+            if (hit.normal.y >= Mathf.Cos(_maxGroundedAngleRads))
+            {
+                _currentAirJumps = 0;
+                return true;
+            }
         }
         return false;
     }
@@ -70,20 +89,39 @@ public class PlayerMovementComponent : MonoBehaviour
         _rigidbody = GetComponent<Rigidbody>();
     }
 
-    public void OnJumpInput()
-    {
-        TryJump();
-    }
-
     public void OnMoveInput(Vector2 moveInput)
     {
         MoveInput = moveInput;
     }
-    private void TryJump()
+
+    public void OnJumpInput()
     {
-        if (!IsGrounded()) return;
-        _velocity.y += Mathf.Sqrt(-2f * Physics.gravity.y * _maxJumpHeight);
+        if (_isGrounded || _currentAirJumps < _maxAirJumps) desiredJump = true;
+    }
+
+
+    private void CheckJump()
+    {
+        if (!desiredJump) return;
+
+        float jumpSpeed = Mathf.Sqrt(-2f * Physics.gravity.y * _maxJumpHeight);
+
+        if (_velocity.y > 0f)
+        {
+            jumpSpeed = Mathf.Max(jumpSpeed - _velocity.y, 0f);
+        }
+
+        _velocity.y += jumpSpeed; 
         _rigidbody.velocity = _velocity;
+
+        if (!_isGrounded) _currentAirJumps++;
+        desiredJump = false;
+    }
+
+    void UpdateState()
+    {
+        _isGrounded = IsGrounded();
+        _velocity = _rigidbody.velocity;
     }
 
     // Update is called once per frame
@@ -94,12 +132,14 @@ public class PlayerMovementComponent : MonoBehaviour
 
     void FixedUpdate()
     {
-        _velocity = _rigidbody.velocity;
-        float maxSpeedChange = _maxAcceleration * Time.deltaTime;
+        UpdateState();
+        float acceleration = _isGrounded ? _maxGroundedAcceleration : _maxAirAcceleration;
+        float maxSpeedChange = acceleration * Time.deltaTime;
         float horizontalAccelerationX = Mathf.MoveTowards(_velocity.x, _desiredVelocity.x, maxSpeedChange);
         float horizontalAccelerationZ = Mathf.MoveTowards(_velocity.z, _desiredVelocity.z, maxSpeedChange);
 
         _velocity = new Vector3(horizontalAccelerationX, _velocity.y, horizontalAccelerationZ);
+        CheckJump();
 
         _rigidbody.velocity = _velocity;
 
