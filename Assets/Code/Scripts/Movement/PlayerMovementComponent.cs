@@ -6,6 +6,9 @@ using UnityEngine.InputSystem;
 
 public class PlayerMovementComponent : MonoBehaviour
 {
+    [SerializeField]
+    TrailRenderer trailRenderer;
+
     [Header("Movement - Walking/Running")]
     [SerializeField, Range(0, 100f)]
     private float _maxSpeed = 10.0f;
@@ -29,7 +32,19 @@ public class PlayerMovementComponent : MonoBehaviour
 
     private bool desiredJump = false;
 
-    [Header("Movement - Grounded")] 
+    [Header("Movement - Sliding")] 
+    [SerializeField, Range(1, 10f)]
+    private float _slideSpeedBoost = 3f;
+    
+    [SerializeField, Range(0, 1000f)]
+    private float _slideAccelerationDecay = 1f;
+
+    [SerializeField] 
+    private float _slideCooldownSeconds = 3f;
+    float lastSlide = 0f;
+
+
+    [Header("Movement - Grounded Cast")] 
     [SerializeField, Range(0, 2f)]
     private float _groundedCastMaxDistance = 0.3f;
     [SerializeField, Range(0, 2f)]
@@ -53,10 +68,14 @@ public class PlayerMovementComponent : MonoBehaviour
     public delegate void OnJump();
 
     public OnJump JumpEvent = null;
+    public delegate void IsSliding(bool isSliding);
+
+    public IsSliding SlidingEvent = null;
     
     public delegate void IsFalling(bool isFalling);
 
     public IsFalling FallingEvent = null;
+    private bool _isSliding = false;
 
     private Vector3 FeetOffset
     {
@@ -83,6 +102,7 @@ public class PlayerMovementComponent : MonoBehaviour
     {
         _rigidbody = GetComponent<Rigidbody>();
         _playerInputSpace = Camera.main.transform;
+        //trailRenderer = GetComponentInChildren<LineRenderer>();
     }
 
     private Vector3 CalculateFeetOffset()
@@ -106,6 +126,8 @@ public class PlayerMovementComponent : MonoBehaviour
                 return true;
             }
         }
+
+        _isSliding = false;
         return false;
     }
 
@@ -117,6 +139,19 @@ public class PlayerMovementComponent : MonoBehaviour
     public void OnJumpInput()
     {
         if (_isGrounded || _currentAirJumps < _maxAirJumps) desiredJump = true;
+    }
+
+    public void OnSlideInput()
+    {
+        if (!_isGrounded || _isSliding) return;
+        if (Time.time < lastSlide + _slideCooldownSeconds) return;
+        if(_velocity.magnitude < _maxSpeed *.1f) return;
+        Debug.Log("Currently Sliding");
+        _rigidbody.AddForce(transform.forward*_slideSpeedBoost *_maxSpeed, ForceMode.VelocityChange);
+        _isSliding = true;
+        lastSlide = Time.time;
+        _velocity = _rigidbody.velocity;
+
     }
 
 
@@ -141,6 +176,7 @@ public class PlayerMovementComponent : MonoBehaviour
 
         JumpEvent?.Invoke();
         desiredJump = false;
+        _isSliding = false;
 
 
     }
@@ -149,7 +185,9 @@ public class PlayerMovementComponent : MonoBehaviour
     {
         _isGrounded = IsGrounded();
         _velocity = _rigidbody.velocity;
+        if (_isSliding && _velocity.magnitude < _maxSpeed*.9) _isSliding = false;
         FallingEvent?.Invoke(!_isGrounded);
+        SlidingEvent?.Invoke(_isSliding);
     }
     private void CalculatePlayerSpeedRelativeToCamera()
     {
@@ -160,19 +198,36 @@ public class PlayerMovementComponent : MonoBehaviour
         right.y = 0f;
         right.Normalize();
         _desiredVelocity = (forward * MoveInput.y + right * MoveInput.x) * _maxSpeed;
+        if (_isSliding) _desiredVelocity = Vector3.zero;
     }
 
     // Update is called once per frame
     void Update()
     {
         CalculatePlayerSpeedRelativeToCamera();
-        UpdateState();
     }
-
 
     void FixedUpdate()
     {
-        float acceleration = _isGrounded ? _maxGroundedAcceleration : _maxGroundedAcceleration*_maxAirAccelerationMultiplier;
+        UpdateState();
+        float acceleration;
+        if (_isGrounded)
+        {
+
+            if (_isSliding)
+            {
+                acceleration = _slideAccelerationDecay;
+            }
+            else
+            {
+                acceleration = _maxGroundedAcceleration;
+            }
+        }
+        else
+        {
+            acceleration = _maxGroundedAcceleration*_maxAirAccelerationMultiplier;
+        }
+
         float maxSpeedChange = acceleration * Time.deltaTime;
         float horizontalAccelerationX = Mathf.MoveTowards(_velocity.x, _desiredVelocity.x, maxSpeedChange);
         float horizontalAccelerationZ = Mathf.MoveTowards(_velocity.z, _desiredVelocity.z, maxSpeedChange);
@@ -190,6 +245,9 @@ public class PlayerMovementComponent : MonoBehaviour
 
         MoveSpeedChangeEvent?.Invoke(horizontalSpeed/_maxSpeed);
 
+
+        if (_isSliding) trailRenderer.startColor = Color.red;
+        else trailRenderer.startColor = Color.blue;
     }
 
     public void OnDrawGizmos()

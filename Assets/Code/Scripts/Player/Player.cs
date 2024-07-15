@@ -22,12 +22,14 @@ public class Player : MonoBehaviour
     {
         PlayerMovementComponent.MoveSpeedChangeEvent+=PlayerAnimationController.SetMovementSpeed;
         PlayerMovementComponent.FallingEvent+=PlayerAnimationController.SetIsFalling;
+        PlayerMovementComponent.SlidingEvent+=PlayerAnimationController.SetIsSliding;
         PlayerMovementComponent.JumpEvent+=PlayerAnimationController.TriggerJump;
     }
     void OnDisable()
     {
         PlayerMovementComponent.MoveSpeedChangeEvent-=PlayerAnimationController.SetMovementSpeed;
         PlayerMovementComponent.FallingEvent-=PlayerAnimationController.SetIsFalling;
+        PlayerMovementComponent.SlidingEvent-=PlayerAnimationController.SetIsSliding;
         PlayerMovementComponent.JumpEvent-=PlayerAnimationController.TriggerJump;
     }
 }

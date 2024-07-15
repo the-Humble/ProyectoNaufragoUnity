@@ -46,6 +46,24 @@ namespace Input
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Look"",
+                    ""type"": ""Value"",
+                    ""id"": ""925b2213-5c47-4307-bcea-5264eb9ce80a"",
+                    ""expectedControlType"": ""Vector2"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": true
+                },
+                {
+                    ""name"": ""Slide"",
+                    ""type"": ""Button"",
+                    ""id"": ""072d88b3-293d-49e6-a1c1-edc14c65f416"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -106,12 +124,78 @@ namespace Input
                 },
                 {
                     ""name"": """",
+                    ""id"": ""566795bc-fc99-4086-bb41-54b0956471e9"",
+                    ""path"": ""<Gamepad>/leftStick"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Move"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
                     ""id"": ""eae55e29-fb5a-4671-9a52-07e6ad245899"",
                     ""path"": ""<Keyboard>/space"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
                     ""action"": ""Jump"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""9dbef3a4-8d76-41f0-be2f-24965e39e5ad"",
+                    ""path"": ""<Gamepad>/buttonSouth"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Jump"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""c71560f2-d03d-4c0f-8017-25e3dc8475df"",
+                    ""path"": ""<Mouse>/delta"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Look"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""ad35747a-5b22-4dd0-8332-832383f40c37"",
+                    ""path"": ""<Gamepad>/rightStick"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Look"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""a4161672-429b-412c-b30b-b9809e5f931f"",
+                    ""path"": ""<Gamepad>/buttonEast"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Slide"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""e70dc10a-5aa5-4188-a0b5-1a5a46544fc8"",
+                    ""path"": ""<Keyboard>/ctrl"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Slide"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -124,6 +208,8 @@ namespace Input
             m_General = asset.FindActionMap("General", throwIfNotFound: true);
             m_General_Move = m_General.FindAction("Move", throwIfNotFound: true);
             m_General_Jump = m_General.FindAction("Jump", throwIfNotFound: true);
+            m_General_Look = m_General.FindAction("Look", throwIfNotFound: true);
+            m_General_Slide = m_General.FindAction("Slide", throwIfNotFound: true);
         }
 
         public void Dispose()
@@ -187,12 +273,16 @@ namespace Input
         private List<IGeneralActions> m_GeneralActionsCallbackInterfaces = new List<IGeneralActions>();
         private readonly InputAction m_General_Move;
         private readonly InputAction m_General_Jump;
+        private readonly InputAction m_General_Look;
+        private readonly InputAction m_General_Slide;
         public struct GeneralActions
         {
             private @PlayerInputActions m_Wrapper;
             public GeneralActions(@PlayerInputActions wrapper) { m_Wrapper = wrapper; }
             public InputAction @Move => m_Wrapper.m_General_Move;
             public InputAction @Jump => m_Wrapper.m_General_Jump;
+            public InputAction @Look => m_Wrapper.m_General_Look;
+            public InputAction @Slide => m_Wrapper.m_General_Slide;
             public InputActionMap Get() { return m_Wrapper.m_General; }
             public void Enable() { Get().Enable(); }
             public void Disable() { Get().Disable(); }
@@ -208,6 +298,12 @@ namespace Input
                 @Jump.started += instance.OnJump;
                 @Jump.performed += instance.OnJump;
                 @Jump.canceled += instance.OnJump;
+                @Look.started += instance.OnLook;
+                @Look.performed += instance.OnLook;
+                @Look.canceled += instance.OnLook;
+                @Slide.started += instance.OnSlide;
+                @Slide.performed += instance.OnSlide;
+                @Slide.canceled += instance.OnSlide;
             }
 
             private void UnregisterCallbacks(IGeneralActions instance)
@@ -218,6 +314,12 @@ namespace Input
                 @Jump.started -= instance.OnJump;
                 @Jump.performed -= instance.OnJump;
                 @Jump.canceled -= instance.OnJump;
+                @Look.started -= instance.OnLook;
+                @Look.performed -= instance.OnLook;
+                @Look.canceled -= instance.OnLook;
+                @Slide.started -= instance.OnSlide;
+                @Slide.performed -= instance.OnSlide;
+                @Slide.canceled -= instance.OnSlide;
             }
 
             public void RemoveCallbacks(IGeneralActions instance)
@@ -239,6 +341,8 @@ namespace Input
         {
             void OnMove(InputAction.CallbackContext context);
             void OnJump(InputAction.CallbackContext context);
+            void OnLook(InputAction.CallbackContext context);
+            void OnSlide(InputAction.CallbackContext context);
         }
     }
 }

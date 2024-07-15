@@ -28,6 +28,7 @@ namespace Input
             _playerInputActions.General.Move.performed += OnMovePerformed;
             _playerInputActions.General.Move.canceled += OnMovePerformed;
             _playerInputActions.General.Jump.performed += OnJumpPerformed;
+            _playerInputActions.General.Slide.performed += OnSlidePerformed;
         }
 
 
@@ -37,6 +38,7 @@ namespace Input
             _playerInputActions.General.Move.performed -= OnMovePerformed;
             _playerInputActions.General.Move.canceled -= OnMovePerformed;
             _playerInputActions.General.Jump.performed -= OnJumpPerformed;
+            _playerInputActions.General.Slide.performed -= OnSlidePerformed;
 
         }
         private void OnJumpPerformed(InputAction.CallbackContext obj)
@@ -44,11 +46,16 @@ namespace Input
             Debug.Log("Performing Jump");
             _player.PlayerMovementComponent.OnJumpInput();
         }
+        private void OnSlidePerformed(InputAction.CallbackContext obj)
+        {
+            Debug.Log("Performing Slide");
+            _player.PlayerMovementComponent.OnSlideInput();
+        }
 
         private void OnMovePerformed(InputAction.CallbackContext context)
         {
             Debug.Log("Performing Move");
-            Vector2 moveInput = context.ReadValue<Vector2>().normalized;
+            Vector2 moveInput = context.ReadValue<Vector2>();
             _player.PlayerMovementComponent.OnMoveInput(moveInput);
         }
     }

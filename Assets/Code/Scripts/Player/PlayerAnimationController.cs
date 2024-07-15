@@ -20,6 +20,10 @@ public class PlayerAnimationController : MonoBehaviour
     {
         _animationController.SetBool("Falling", isFalling);
     }
+    public void SetIsSliding(bool isSliding)
+    {
+        _animationController.SetBool("Sliding", isSliding);
+    }
 
     public void TriggerJump()
     {
