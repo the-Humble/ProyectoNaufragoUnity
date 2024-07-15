@@ -19,8 +19,8 @@ public class PlayerMovementComponent : MonoBehaviour
     [Header("Movement - Jumping")]
     [SerializeField, Range(0, 10f)]
     private float _maxJumpHeight = 5f;
-    [SerializeField, Range(0, 10f)]
-    private float _maxAirAcceleration = 1f;
+    [SerializeField, Range(0, 1f)]
+    private float _maxAirAccelerationMultiplier = .5f;
 
     [SerializeField] 
     private int _maxAirJumps = 1;
@@ -46,6 +46,18 @@ public class PlayerMovementComponent : MonoBehaviour
     private Vector3 _feetOffset = -Vector3.one;
     private bool _isGrounded;
 
+    public delegate void OnMovementSpeedChange(float speed);
+
+    public OnMovementSpeedChange MoveSpeedChangeEvent = null;
+
+    public delegate void OnJump();
+
+    public OnJump JumpEvent = null;
+    
+    public delegate void IsFalling(bool isFalling);
+
+    public IsFalling FallingEvent = null;
+
     private Vector3 FeetOffset
     {
         get
@@ -59,7 +71,6 @@ public class PlayerMovementComponent : MonoBehaviour
     }
 
     private Vector3 FeetPosition => transform.position + FeetOffset;
-
 
     public Vector2 MoveInput { get; private set; }
 
@@ -123,14 +134,22 @@ public class PlayerMovementComponent : MonoBehaviour
         _velocity.y += jumpSpeed; 
         _rigidbody.velocity = _velocity;
 
-        if (!_isGrounded) _currentAirJumps++;
+        if (!_isGrounded)
+        {
+            _currentAirJumps++;
+        }
+
+        JumpEvent?.Invoke();
         desiredJump = false;
+
+
     }
 
     void UpdateState()
     {
         _isGrounded = IsGrounded();
         _velocity = _rigidbody.velocity;
+        FallingEvent?.Invoke(!_isGrounded);
     }
     private void CalculatePlayerSpeedRelativeToCamera()
     {
@@ -147,13 +166,13 @@ public class PlayerMovementComponent : MonoBehaviour
     void Update()
     {
         CalculatePlayerSpeedRelativeToCamera();
+        UpdateState();
     }
 
 
     void FixedUpdate()
     {
-        UpdateState();
-        float acceleration = _isGrounded ? _maxGroundedAcceleration : _maxAirAcceleration;
+        float acceleration = _isGrounded ? _maxGroundedAcceleration : _maxGroundedAcceleration*_maxAirAccelerationMultiplier;
         float maxSpeedChange = acceleration * Time.deltaTime;
         float horizontalAccelerationX = Mathf.MoveTowards(_velocity.x, _desiredVelocity.x, maxSpeedChange);
         float horizontalAccelerationZ = Mathf.MoveTowards(_velocity.z, _desiredVelocity.z, maxSpeedChange);
@@ -166,6 +185,10 @@ public class PlayerMovementComponent : MonoBehaviour
         {
             transform.forward = new Vector3(_velocity.x, 0, _velocity.z);
         }
+
+        float horizontalSpeed = new Vector3(_velocity.x, 0, _velocity.z).magnitude;
+
+        MoveSpeedChangeEvent?.Invoke(horizontalSpeed/_maxSpeed);
 
     }
 
