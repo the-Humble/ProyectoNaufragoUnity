@@ -137,7 +137,6 @@ public class PlayerMovementComponent : MonoBehaviour
         Vector3 forward = _playerInputSpace.forward;
         forward.y = 0f;
         forward.Normalize();
-        Debug.Log(forward);
         Vector3 right = _playerInputSpace.right;
         right.y = 0f;
         right.Normalize();
@@ -163,6 +162,10 @@ public class PlayerMovementComponent : MonoBehaviour
         CheckJump();
 
         _rigidbody.velocity = _velocity;
+        if (_velocity.magnitude > 0.1f)
+        {
+            transform.forward = new Vector3(_velocity.x, 0, _velocity.z);
+        }
 
     }
 
