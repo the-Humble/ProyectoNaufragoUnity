@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class PlayerMovementComponent : MonoBehaviour
 {
@@ -34,6 +35,8 @@ public class PlayerMovementComponent : MonoBehaviour
     [SerializeField, Range(0, 2f)]
     private float _groundedCastRadius = 0.1f;
 
+    [SerializeField]
+    private Transform _playerInputSpace = null;
 
     private Rigidbody _rigidbody;
 
@@ -60,6 +63,17 @@ public class PlayerMovementComponent : MonoBehaviour
 
     public Vector2 MoveInput { get; private set; }
 
+    public void InitializeInputSpace(Transform inputSpace)
+    {
+        _playerInputSpace = inputSpace;
+    }
+
+    public void Awake()
+    {
+        _rigidbody = GetComponent<Rigidbody>();
+        _playerInputSpace = Camera.main.transform;
+    }
+
     private Vector3 CalculateFeetOffset()
     {
         if (TryGetComponent<Collider>(out Collider collider))
@@ -82,11 +96,6 @@ public class PlayerMovementComponent : MonoBehaviour
             }
         }
         return false;
-    }
-
-    public void Awake()
-    {
-        _rigidbody = GetComponent<Rigidbody>();
     }
 
     public void OnMoveInput(Vector2 moveInput)
@@ -123,12 +132,24 @@ public class PlayerMovementComponent : MonoBehaviour
         _isGrounded = IsGrounded();
         _velocity = _rigidbody.velocity;
     }
+    private void CalculatePlayerSpeedRelativeToCamera()
+    {
+        Vector3 forward = _playerInputSpace.forward;
+        forward.y = 0f;
+        forward.Normalize();
+        Debug.Log(forward);
+        Vector3 right = _playerInputSpace.right;
+        right.y = 0f;
+        right.Normalize();
+        _desiredVelocity = (forward * MoveInput.y + right * MoveInput.x) * _maxSpeed;
+    }
 
     // Update is called once per frame
     void Update()
     {
-        _desiredVelocity = new Vector3(MoveInput.x, 0f, MoveInput.y) * _maxSpeed;
+        CalculatePlayerSpeedRelativeToCamera();
     }
+
 
     void FixedUpdate()
     {
