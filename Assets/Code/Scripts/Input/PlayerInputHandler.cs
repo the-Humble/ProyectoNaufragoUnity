@@ -11,13 +11,13 @@ namespace Input
     public class PlayerInputHandler : MonoBehaviour
     {
         [SerializeField]
-        private Player _player;
+        private PlayerController _playerController;
         [SerializeField]
         private PlayerInputActions _playerInputActions;
 
         public void Awake()
         {
-            _player = GetComponentInParent<Player>();
+            _playerController = GetComponentInParent<PlayerController>();
             _playerInputActions = new PlayerInputActions();
 
         }
@@ -44,19 +44,19 @@ namespace Input
         private void OnJumpPerformed(InputAction.CallbackContext obj)
         {
             Debug.Log("Performing Jump");
-            _player.PlayerMovementComponent.OnJumpInput();
+            _playerController.PlayerMovementComponent.OnJumpInput();
         }
         private void OnSlidePerformed(InputAction.CallbackContext obj)
         {
             Debug.Log("Performing Slide");
-            _player.PlayerMovementComponent.OnSlideInput();
+            _playerController.PlayerMovementComponent.OnSlideInput();
         }
 
         private void OnMovePerformed(InputAction.CallbackContext context)
         {
             Debug.Log("Performing Move");
             Vector2 moveInput = context.ReadValue<Vector2>();
-            _player.PlayerMovementComponent.OnMoveInput(moveInput);
+            _playerController.PlayerMovementComponent.OnMoveInput(moveInput);
         }
     }
 }

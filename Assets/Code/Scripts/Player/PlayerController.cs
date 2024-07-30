@@ -5,7 +5,7 @@ using UnityEngine;
 
 [RequireComponent(typeof(PlayerMovementComponent))]
 [RequireComponent(typeof(PlayerAnimationController))]
-public class Player : MonoBehaviour
+public class PlayerController : MonoBehaviour
 {
     public PlayerMovementComponent PlayerMovementComponent { get; private set; }
     public PlayerAnimationController PlayerAnimationController { get; private set; }
@@ -18,7 +18,9 @@ public class Player : MonoBehaviour
         _playerCamera = GetComponentInChildren<CinemachineFreeLook>();
     }
 
-    void OnEnable()
+
+
+    /*void OnEnable()
     {
         PlayerMovementComponent.MoveSpeedChangeEvent+=PlayerAnimationController.SetMovementSpeed;
         PlayerMovementComponent.FallingEvent+=PlayerAnimationController.SetIsFalling;
@@ -31,5 +33,5 @@ public class Player : MonoBehaviour
         PlayerMovementComponent.FallingEvent-=PlayerAnimationController.SetIsFalling;
         PlayerMovementComponent.SlidingEvent-=PlayerAnimationController.SetIsSliding;
         PlayerMovementComponent.JumpEvent-=PlayerAnimationController.TriggerJump;
-    }
+    }*/
 }
