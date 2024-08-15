@@ -4,8 +4,7 @@ using Input;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-public interface IInputProcessor<T> where T : IInputActionCollection
+public interface IInputProcessor
 {
-    public void SetupInputListeners(ref T playerInputActions);
-    public void RemoveInputListeners(ref T playerInputActions);
+    public void SetupInputController();
 }

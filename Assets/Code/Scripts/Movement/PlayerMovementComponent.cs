@@ -9,7 +9,7 @@ public class PlayerMovementComponent : MonoBehaviour
     [SerializeField]
     TrailRenderer trailRenderer;
 
-    [Header("Movement - Walking/Running")]
+    [Header("Movement - WalkRun/Running")]
     [SerializeField, Range(0, 100f)]
     private float _maxSpeed = 10.0f;
     [SerializeField, Range(0, 1000f)]
@@ -92,11 +92,6 @@ public class PlayerMovementComponent : MonoBehaviour
     private Vector3 FeetPosition => transform.position + FeetOffset;
 
     public Vector2 MoveInput { get; private set; }
-
-    public void InitializeInputSpace(Transform inputSpace)
-    {
-        _playerInputSpace = inputSpace;
-    }
 
     public void Awake()
     {
