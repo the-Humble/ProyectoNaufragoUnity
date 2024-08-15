@@ -1,10 +1,10 @@
 using System.Collections;
 using System.Collections.Generic;
+using Input;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-public abstract class InputBasedStateMachine<T> : StateMachine, IInputProcessor where T : IInputActionCollection
+public abstract class InputBasedStateMachine : StateMachine, IInputProcessor
 {
-    protected T inputActionCollection;
     public abstract void SetupInputController();
 }

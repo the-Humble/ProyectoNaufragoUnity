@@ -5,10 +5,16 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "Player States", menuName = "ScriptableObjects/Player States/Grounded State", order = 1)]
 public class GroundedPlayerState : MovementPlayerState
 {
-    public override void OnFixedUpdateState(StateMachine stateMachine)
+    public override void OnUpdateState()
     {
-        base.OnFixedUpdateState(stateMachine);
+        base.OnUpdateState();
+    }
+
+    public override void OnFixedUpdateState()
+    {
+        base.OnFixedUpdateState();
         CalculateHorizontalAcceleration();
         FaceDirectionOfMovement();
     }
+
 }

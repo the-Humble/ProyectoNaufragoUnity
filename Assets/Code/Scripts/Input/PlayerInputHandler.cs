@@ -11,18 +11,17 @@ namespace Input
     public class PlayerInputHandler : MonoBehaviour
     {
         [SerializeField]
-        private PlayerController _playerController;
-        [SerializeField]
-        private PlayerInputActions _playerInputActions;
+        private static PlayerInputActions _playerInputActions;
+
+        public static PlayerInputActions PlayerInputActions => _playerInputActions;
 
         public void Awake()
         {
-            _playerController = GetComponentInParent<PlayerController>();
             _playerInputActions = new PlayerInputActions();
 
         }
 
-        public void OnEnable()
+       /* public void OnEnable()
         {
             _playerInputActions.Enable();
             _playerInputActions.General.Move.performed += OnMovePerformed;
@@ -57,6 +56,6 @@ namespace Input
             Debug.Log("Performing Move");
             Vector2 moveInput = context.ReadValue<Vector2>();
             _playerController.PlayerMovementComponent.OnMoveInput(moveInput);
-        }
+        }*/
     }
 }

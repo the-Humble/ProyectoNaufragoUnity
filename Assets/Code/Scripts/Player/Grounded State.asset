@@ -12,5 +12,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fb4b4de34691d814eb3b020c875da192, type: 3}
   m_Name: Grounded State
   m_EditorClassIdentifier: 
-  name: Grounded
-  description: Player Is Grounded
+  _name: Grounded State
+  _description: Grounded State Description

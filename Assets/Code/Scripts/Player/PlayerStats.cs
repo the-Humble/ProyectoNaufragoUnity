@@ -31,6 +31,7 @@ public struct WalkRun
     [SerializeField]
     private float _maxGroundAcceleration;
     public float MaxGroundSpeed => _maxGroundSpeed;
+    public float MaxGroundAcceleration => _maxGroundAcceleration;
 }
 [Serializable]
 public struct Sliding

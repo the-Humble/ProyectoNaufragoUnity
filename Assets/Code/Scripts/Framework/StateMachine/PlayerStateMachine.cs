@@ -5,7 +5,7 @@ using Input;
 using UnityEditor.Recorder.Input;
 using UnityEngine;
 
-public class PlayerStateMachine : InputBasedStateMachine<PlayerInputActions>
+public class PlayerStateMachine : InputBasedStateMachine
 {
     public PlayerMovementComponent PlayerMovementComponent { get; private set; }
     public PlayerAnimationController PlayerAnimationController { get; private set; }
@@ -17,20 +17,23 @@ public class PlayerStateMachine : InputBasedStateMachine<PlayerInputActions>
     [SerializeField] private CinemachineFreeLook _playerCamera;
     [SerializeField] private PlayerBaseState _initialPlayerState;
 
+    public static PlayerInputActions PlayerInputActions;
+
 
     public override void Awake()
     {
-        initialState = _initialPlayerState;
-        base.Awake();
         SetupInputController();
+        initialState = _initialPlayerState;
         PlayerMovementComponent = GetComponent<PlayerMovementComponent>();
         PlayerAnimationController = GetComponent<PlayerAnimationController>();
         _playerCamera = GetComponentInChildren<CinemachineFreeLook>();
+        base.Awake();
 
     }
 
     public override void SetupInputController()
     {
-        inputActionCollection = new PlayerInputActions();
+        PlayerInputActions = new PlayerInputActions();
+        PlayerInputActions.Enable();
     }
 }

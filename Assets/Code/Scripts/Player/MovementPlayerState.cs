@@ -34,39 +34,46 @@ public abstract class MovementPlayerState : PlayerBaseState
         }
     }
 
-    protected Vector3 FeetPosition => StateMachine.transform.position + FeetOffset;
-    public override void InitState(PlayerStateMachine stateMachine, ref PlayerInputActions playerInputActions)
+    protected Vector3 FeetPosition => StateMachineController.transform.position + FeetOffset;
+    public override void InitState(PlayerStateMachine stateMachine, PlayerInputActions playerInputActions)
     {
-        base.InitState(stateMachine, ref playerInputActions);
+        base.InitState(stateMachine, playerInputActions);
         _maxSpeed = stateMachine.PlayerBaseStats.Grounded.WalkRun.MaxGroundSpeed;
+        _maxAcceleration = stateMachine.PlayerBaseStats.Grounded.WalkRun.MaxGroundAcceleration;
     }
 
-    public override void OnEnterState(PlayerStateMachine stateMachine)
+    public override void OnEnterState(StateMachine stateMachine)
     {
         base.OnEnterState(stateMachine);
         _playerInputSpace = Camera.main.transform;
-        _rigidbody = stateMachine.GetComponentInChildren<Rigidbody>();
+        _rigidbody = StateMachineController.GetComponentInChildren<Rigidbody>();
+        if (StateMachineController is PlayerStateMachine)
+        {
+
+        }
     }
 
-    public override void OnUpdateState(PlayerStateMachine stateMachine)
+    public override void OnUpdateState()
     {
-        base.OnUpdateState(stateMachine);
+        base.OnUpdateState();
         CalculatePlayerSpeedRelativeToCamera();
     }
 
-    public override void OnFixedUpdateState(PlayerStateMachine stateMachine)
+    public override void OnFixedUpdateState()
     {
-        base.OnFixedUpdateState(stateMachine);
+        base.OnFixedUpdateState();
         _velocity = _rigidbody.velocity;
     }
-    public override void SetupInputListeners(ref PlayerInputActions playerInputActions)
+    public override void SetupInputListeners(PlayerInputActions playerInputActions)
     {
         playerInputActions.General.Move.performed += OnMovePerformed;
+        playerInputActions.General.Move.canceled += OnMovePerformed;
     }
 
-    public override void RemoveInputListeners(ref PlayerInputActions playerInputActions)
+    public override void RemoveInputListeners(PlayerInputActions playerInputActions)
     {
         playerInputActions.General.Move.performed -= OnMovePerformed;
+        playerInputActions.General.Move.canceled -= OnMovePerformed;
     }
 
     private void OnMovePerformed(InputAction.CallbackContext context)
@@ -85,15 +92,16 @@ public abstract class MovementPlayerState : PlayerBaseState
         right.y = 0f;
         right.Normalize();
         _desiredVelocity = (forward * MoveInput.y + right * MoveInput.x) * _maxSpeed;
+        Debug.Log("[MovementPlayerState] Desired Velocity: " + _desiredVelocity);
     }
 
     private Vector3 CalculateFeetOffset()
     {
-        if (StateMachine.TryGetComponent<Collider>(out Collider collider))
+        if (StateMachineController.TryGetComponent<Collider>(out Collider collider))
         {
             Vector3 minCenterPoint = collider.bounds.center;
             minCenterPoint.y = collider.bounds.min.y + _groundedCastRadius * 1.01f;
-            return StateMachine.transform.InverseTransformPoint(minCenterPoint);
+            return StateMachineController.transform.InverseTransformPoint(minCenterPoint);
         }
         return Vector3.zero;
     }
@@ -105,6 +113,7 @@ public abstract class MovementPlayerState : PlayerBaseState
         float horizontalAccelerationZ = Mathf.MoveTowards(_velocity.z, _desiredVelocity.z, maxSpeedChange);
 
         _velocity = new Vector3(horizontalAccelerationX, _velocity.y, horizontalAccelerationZ);
+        Debug.Log("[MovementPlayerState] VElocity after Horizontal Acceleration: " + _velocity);
     }
 
     protected void FaceDirectionOfMovement()
@@ -112,7 +121,7 @@ public abstract class MovementPlayerState : PlayerBaseState
         _rigidbody.velocity = _velocity;
         if (_velocity.magnitude > 0.1f)
         {
-            StateMachine.transform.forward = new Vector3(_velocity.x, 0, _velocity.z);
+            StateMachineController.transform.forward = new Vector3(_velocity.x, 0, _velocity.z);
         }
     }
 }

@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class StateMachine : MonoBehaviour
 {
@@ -18,12 +19,12 @@ public class StateMachine : MonoBehaviour
 
     public void Update()
     {
-        currentState.OnUpdateState(this);
+        currentState.OnUpdateState();
     }
 
     public void FixedUpdate()
     {
-        currentState.OnUpdateState(this);
+        currentState.OnFixedUpdateState();
     }
 
     public void SwitchState(IState newState)
@@ -31,7 +32,7 @@ public class StateMachine : MonoBehaviour
         Debug.Log("[State Machine] State Machine transitioning to state: " + newState.Name);
 
         if(currentState!=null)
-            currentState.OnExitState(this);
+            currentState.OnExitState();
 
         currentState = newState;
         currentState.OnEnterState(this);

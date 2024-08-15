@@ -12,3 +12,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: db1bbc1d9f93e714c94dc0bebf3445ed, type: 3}
   m_Name: Player Stats
   m_EditorClassIdentifier: 
+  _grounded:
+    _maxGroundedAngle: 70
+    _groundedCastMaxDistance: 0.081
+    _groundedCastRadius: 0.275
+    WalkRun:
+      _maxGroundSpeed: 70
+      _maxGroundAcceleration: 700
+    Sliding:
+      _slideDecay: 0

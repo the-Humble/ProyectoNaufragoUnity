@@ -10,50 +10,53 @@ public abstract class InputListenerState<T, W>
     where W : IInputActionCollection
 
 {
-    protected T StateMachine;
-    protected W InputActionCollection;
+    protected T StateMachineController;
+    protected W PlayerInputActions;
 
     [SerializeField]
-    private string name = "New State";
+    private string _name = "New State";
     [SerializeField]
-    private string description = "New State Description";
+    private string _description = "New State Description";
     public string Name
     {
-        get => name;
-        set => name = value;
+        get => _name;
+        set => _name = value;
     }
 
     public string Description 
     {
-        get=>description;
-        set=> description = value;
+        get=>_description;
+        set=> _description = value;
     }
 
     public Dictionary<IDecision, IState> Transitions { get; set; }
 
-    public virtual void InitState(T stateMachine, ref W playerInputActions)
+    public virtual void InitState(T stateMachine, W playerInputActions)
     {
-        InputActionCollection = playerInputActions;
-        StateMachine = stateMachine;
+        Debug.Log("[Input Listener State] Initializing State: " + Name);
+
+        StateMachineController = stateMachine;
+        PlayerInputActions = playerInputActions;
     }
 
     public virtual void OnEnterState(StateMachine stateMachine)
     {
-        SetupInputListeners(ref InputActionCollection);
+        Debug.Log("[Input Listener State] Entering State: " + Name);
+        SetupInputListeners(PlayerInputActions);
     }
 
-    public virtual void OnUpdateState(StateMachine stateMachine)
+    public virtual void OnUpdateState()
     {}
 
-    public virtual void OnFixedUpdateState(StateMachine stateMachine)
+    public virtual void OnFixedUpdateState()
     {}
 
-    public virtual void OnExitState(StateMachine stateMachine)
+    public virtual void OnExitState()
     {
-        RemoveInputListeners(ref InputActionCollection);
+        RemoveInputListeners(PlayerInputActions);
     }
 
-    public abstract void SetupInputListeners(ref W inputActionCollection);
+    public abstract void SetupInputListeners(W playerInputActions);
 
-    public abstract void RemoveInputListeners(ref W inputActionCollection);
+    public abstract void RemoveInputListeners(W playerInputActions);
 }

@@ -616,6 +616,12 @@ LightingSettings:
   m_PVRTiledBaking: 0
   m_NumRaysToShootPerTexel: -1
   m_RespectSceneVisibilityWhenBakingGI: 0
+--- !u!95 &916937039 stripped
+Animator:
+  m_CorrespondingSourceObject: {fileID: 3334361266855497342, guid: 06d3d40f401b9424f9a91dccecff9387,
+    type: 3}
+  m_PrefabInstance: {fileID: 7044077174051886531}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1033907451
 GameObject:
   m_ObjectHideFlags: 0
@@ -734,6 +740,18 @@ MonoBehaviour:
   m_LightCookieSize: {x: 1, y: 1}
   m_LightCookieOffset: {x: 0, y: 0}
   m_SoftShadowQuality: 0
+--- !u!114 &1589044872 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 1600511656565912009, guid: 06d3d40f401b9424f9a91dccecff9387,
+    type: 3}
+  m_PrefabInstance: {fileID: 7044077174051886531}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 319d2fe34a804e245819465c9505ea59, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &2025380819
 GameObject:
   m_ObjectHideFlags: 0
@@ -908,12 +926,12 @@ PrefabInstance:
     - target: {fileID: 2355777090441823289, guid: 06d3d40f401b9424f9a91dccecff9387,
         type: 3}
       propertyPath: m_LocalRotation.y
-      value: -0
+      value: 3e-45
       objectReference: {fileID: 0}
     - target: {fileID: 2355777090441823289, guid: 06d3d40f401b9424f9a91dccecff9387,
         type: 3}
       propertyPath: m_LocalRotation.z
-      value: -0
+      value: -3e-45
       objectReference: {fileID: 0}
     - target: {fileID: 2573283047119536956, guid: 06d3d40f401b9424f9a91dccecff9387,
         type: 3}
@@ -1007,19 +1025,35 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5710114104447091499, guid: 06d3d40f401b9424f9a91dccecff9387,
         type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 0.9983485
+      objectReference: {fileID: 0}
+    - target: {fileID: 5710114104447091499, guid: 06d3d40f401b9424f9a91dccecff9387,
+        type: 3}
       propertyPath: m_LocalRotation.x
       value: 0.057448864
       objectReference: {fileID: 0}
     - target: {fileID: 5710114104447091499, guid: 06d3d40f401b9424f9a91dccecff9387,
         type: 3}
       propertyPath: m_LocalRotation.y
-      value: 0.000000011716252
+      value: -0.000000015257742
       objectReference: {fileID: 0}
     - target: {fileID: 5710114104447091499, guid: 06d3d40f401b9424f9a91dccecff9387,
         type: 3}
       propertyPath: m_LocalRotation.z
-      value: -0.000000014555908
+      value: 0.000000018955744
       objectReference: {fileID: 0}
+    - target: {fileID: 5890820100434167693, guid: 06d3d40f401b9424f9a91dccecff9387,
+        type: 3}
+      propertyPath: _playerCamera
+      value: 
+      objectReference: {fileID: 1589044872}
+    - target: {fileID: 5890820100434167693, guid: 06d3d40f401b9424f9a91dccecff9387,
+        type: 3}
+      propertyPath: _initialPlayerState
+      value: 
+      objectReference: {fileID: 11400000, guid: a7733ba91f474434b990d13ec3af8eb9,
+        type: 2}
     - target: {fileID: 6805271509229722770, guid: 06d3d40f401b9424f9a91dccecff9387,
         type: 3}
       propertyPath: _slideSpeedBoost
@@ -1030,6 +1064,11 @@ PrefabInstance:
       propertyPath: _slideCooldownSeconds
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 6894879018172615093, guid: 06d3d40f401b9424f9a91dccecff9387,
+        type: 3}
+      propertyPath: _animationController
+      value: 
+      objectReference: {fileID: 916937039}
     - target: {fileID: 7153136221846319852, guid: 06d3d40f401b9424f9a91dccecff9387,
         type: 3}
       propertyPath: m_FollowOffset.y
