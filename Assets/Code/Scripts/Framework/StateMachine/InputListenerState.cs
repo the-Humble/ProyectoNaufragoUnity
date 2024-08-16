@@ -31,7 +31,7 @@ public abstract class InputListenerState<T, W>
 
     public Dictionary<IDecision, IState> Transitions { get; set; }
 
-    public virtual void InitState(T stateMachine, W playerInputActions)
+    public virtual void InitInputState(T stateMachine, W playerInputActions)
     {
         Debug.Log("[Input Listener State] Initializing State: " + Name);
 

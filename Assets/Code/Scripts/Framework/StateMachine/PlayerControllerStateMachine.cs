@@ -5,7 +5,7 @@ using Input;
 using UnityEditor.Recorder.Input;
 using UnityEngine;
 
-public class PlayerStateMachine : InputBasedStateMachine
+public class PlayerControllerStateMachine : InputBasedStateMachine
 {
     public PlayerMovementComponent PlayerMovementComponent { get; private set; }
     public PlayerAnimationController PlayerAnimationController { get; private set; }

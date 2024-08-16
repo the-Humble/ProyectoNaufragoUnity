@@ -13,7 +13,7 @@ public abstract class MovementPlayerState : PlayerBaseState
     protected float _maxSpeed = 10.0f;
     protected float _maxAcceleration = 100f;
     protected float _groundedCastRadius = 0.1f;
-
+    protected bool _isGrounded = false;
     
 
     protected Transform _playerInputSpace = null;
@@ -35,11 +35,9 @@ public abstract class MovementPlayerState : PlayerBaseState
     }
 
     protected Vector3 FeetPosition => StateMachineController.transform.position + FeetOffset;
-    public override void InitState(PlayerStateMachine stateMachine, PlayerInputActions playerInputActions)
+    public override void InitInputState(PlayerControllerStateMachine controllerStateMachine, PlayerInputActions playerInputActions)
     {
-        base.InitState(stateMachine, playerInputActions);
-        _maxSpeed = stateMachine.PlayerBaseStats.Grounded.WalkRun.MaxGroundSpeed;
-        _maxAcceleration = stateMachine.PlayerBaseStats.Grounded.WalkRun.MaxGroundAcceleration;
+        base.InitInputState(controllerStateMachine, playerInputActions);
     }
 
     public override void OnEnterState(StateMachine stateMachine)
@@ -47,10 +45,6 @@ public abstract class MovementPlayerState : PlayerBaseState
         base.OnEnterState(stateMachine);
         _playerInputSpace = Camera.main.transform;
         _rigidbody = StateMachineController.GetComponentInChildren<Rigidbody>();
-        if (StateMachineController is PlayerStateMachine)
-        {
-
-        }
     }
 
     public override void OnUpdateState()
@@ -63,6 +57,9 @@ public abstract class MovementPlayerState : PlayerBaseState
     {
         base.OnFixedUpdateState();
         _velocity = _rigidbody.velocity;
+        _isGrounded = IsGrounded();
+        CalculateHorizontalAcceleration();
+        FaceDirectionOfMovement();
     }
     public override void SetupInputListeners(PlayerInputActions playerInputActions)
     {
@@ -92,7 +89,7 @@ public abstract class MovementPlayerState : PlayerBaseState
         right.y = 0f;
         right.Normalize();
         _desiredVelocity = (forward * MoveInput.y + right * MoveInput.x) * _maxSpeed;
-        Debug.Log("[MovementPlayerState] Desired Velocity: " + _desiredVelocity);
+        //Debug.Log("[MovementPlayerState] Desired Velocity: " + _desiredVelocity);
     }
 
     private Vector3 CalculateFeetOffset()
@@ -113,7 +110,7 @@ public abstract class MovementPlayerState : PlayerBaseState
         float horizontalAccelerationZ = Mathf.MoveTowards(_velocity.z, _desiredVelocity.z, maxSpeedChange);
 
         _velocity = new Vector3(horizontalAccelerationX, _velocity.y, horizontalAccelerationZ);
-        Debug.Log("[MovementPlayerState] VElocity after Horizontal Acceleration: " + _velocity);
+        //Debug.Log("[MovementPlayerState] Velocity after Horizontal Acceleration: " + _velocity);
     }
 
     protected void FaceDirectionOfMovement()
@@ -123,5 +120,18 @@ public abstract class MovementPlayerState : PlayerBaseState
         {
             StateMachineController.transform.forward = new Vector3(_velocity.x, 0, _velocity.z);
         }
+    }
+
+    private bool IsGrounded()
+    {
+        RaycastHit hit;
+        if (Physics.SphereCast(FeetPosition, _groundedCastRadius, Vector3.down, out hit, StateMachineController.PlayerBaseStats.Grounded.GroundedCatMaxDistance))
+        {
+            if (hit.normal.y >= Mathf.Cos(StateMachineController.PlayerBaseStats.Grounded.MaxGroundedAngleRads))
+            {
+                return true;
+            }
+        }
+        return false;
     }
 }

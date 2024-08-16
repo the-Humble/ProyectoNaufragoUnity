@@ -6,6 +6,8 @@ public class PlayerAnimationController : MonoBehaviour
 {
     [SerializeField]
     private Animator _animationController;
+
+    public Animator PlayerAnimator => _animationController;
     void Awake()
     {
         _animationController = GetComponentInChildren<Animator>();

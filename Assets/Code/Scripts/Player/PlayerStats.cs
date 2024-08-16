@@ -22,6 +22,19 @@ public struct Grounded
     public float GroundedCastRadius => _groundedCastRadius;
 }
 
+public struct Falling
+{
+    [SerializeField]
+    private float _maxAirSpeed;
+    [SerializeField]
+    [Range(0, 1f)]
+    private float _airAccelerationMultiplier;
+
+    public float MaxAirSpeed => _maxAirSpeed;
+    public float AirAccelerationMultiplier => _airAccelerationMultiplier;
+
+}
+
 [Serializable]
 public struct WalkRun
 {
@@ -48,9 +61,17 @@ public class PlayerStats : ScriptableObject
 
     [SerializeField]
     private Grounded _grounded = new();
+
+    [SerializeField] 
+    private Falling _falling = new();
     public Grounded Grounded
     {
         get => _grounded;
+    }
+
+    public Falling Falling
+    {
+        get => _falling;
     }
 
 }

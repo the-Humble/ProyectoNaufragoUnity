@@ -4,14 +4,14 @@ using System.Collections.Generic;
 using Input;
 using UnityEngine;
 
-public abstract class PlayerBaseState : InputListenerState<PlayerStateMachine, PlayerInputActions>
+public abstract class PlayerBaseState : InputListenerState<PlayerControllerStateMachine, PlayerInputActions>
 {
     public override void OnEnterState(StateMachine stateMachine)
     {
-        if (stateMachine is PlayerStateMachine)
+        if (stateMachine is PlayerControllerStateMachine)
         {
-            PlayerStateMachine playerStateMachine = (PlayerStateMachine)stateMachine;
-            InitState(playerStateMachine, PlayerStateMachine.PlayerInputActions);
+            PlayerControllerStateMachine playerControllerStateMachine = (PlayerControllerStateMachine)stateMachine;
+            InitInputState(playerControllerStateMachine, PlayerControllerStateMachine.PlayerInputActions);
             base.OnEnterState(stateMachine);
         }
     }
